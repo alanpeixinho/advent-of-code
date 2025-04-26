@@ -22,7 +22,7 @@ proc output(ref outbuf, val) {
 }
 
 enum opcode {
-    i_none = -1, i_adv = 0, i_bxl, i_bst, i_jnz, i_bxc, i_out, i_bdv, i_cdv
+    i_adv = 0, i_bxl, i_bst, i_jnz, i_bxc, i_out, i_bdv, i_cdv
 };
 
 proc read_input() {
@@ -84,7 +84,6 @@ proc execute(const ref program: [] opcode, ref reg: Registers, ref outbuf) {
         if (reg.pc + 1) >= program.size then break;
         const instruction = program[reg.pc];
         const operand = program[reg.pc + 1];
-        if instruction == opcode.i_none || operand == opcode.i_none then break;
         select instruction {
             when opcode.i_adv do exec_adv(reg, operand: int(8));
             when opcode.i_bxl do exec_bxl(reg, operand: int(8));
