@@ -1,4 +1,4 @@
-use std::{collections::LinkedList, io::stdin};
+use std::io::stdin;
 
 fn read_line() -> (Vec<Option<i32>>, Vec<(usize, usize)>) {
     let mut nums: Vec<u32> = Vec::new();
