@@ -103,7 +103,7 @@ proc sides(const ref data: [?D] int(32)): [] int(32)
         [ (0, 1), (1, 0), (1, 1) ],      //right-down
         [ (0, 1), (-1, 0), (-1, 1) ],     //right-up
         [ (0, -1), (1, 0), (1, -1) ],     //left-down
-        [ (0, -1), (-1, 0), (-1, -1)],     //left-up
+        [ (0, -1), (-1, 0), (-1, -1) ],     //left-up
     ];
 
     for (i, j) in D {
@@ -113,7 +113,8 @@ proc sides(const ref data: [?D] int(32)): [] int(32)
                 (!D.contains((i, j) + dir[d]) || data[(i, j) + dir[d]] != data[(i, j)]);
             if check[0] && check[1] { // convex corners
                 sum += 1;
-            } else if !check[0] && !check[1] && check[2] { // concave corners
+            }
+            if !check[0] && !check[1] && check[2] { // concave corners
                 sum += 1;
             }
         }
@@ -136,6 +137,6 @@ proc main() {
     const total = + reduce for (a, p) in zip(gardenArea, gardenPerimeter) do a * p;
     writeln("Total price: ", total);
 
-    const bulkTotal = + reduce for (s, p) in zip(gardenArea, gardenSides) do s * p;
+    const bulkTotal = + reduce for (a, s) in zip(gardenArea, gardenSides) do a * s;
     writeln("Bulk total price: ", bulkTotal);
 }
