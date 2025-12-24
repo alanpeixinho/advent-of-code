@@ -1,11 +1,5 @@
 #include <iostream>
-#include <map>
-#include <set>
 #include <string>
-#include <cassert>
-#include <cctype>
-#include <cstddef>
-#include <cstdio>
 #include <deque>
 #include <limits>
 #include <string_view>
@@ -101,7 +95,7 @@ int bfs(int end, const vector<int>& edges) {
         if (cur == end)
             return level;
         visited.insert(cur);
-        for (int edge : edges) {
+        for (const int edge : edges) {
             const int next = cur ^ edge;
             if (visited.find(next) == cend(visited))
                 q.push_back({next, level + 1});
@@ -109,62 +103,6 @@ int bfs(int end, const vector<int>& edges) {
     }
 
     return numeric_limits<int>::max();
-}
-
-template <typename T>
-bool beyond(const vector<T>& cur, const vector<T>& end) {
-    for (int i = 0; i < cur.size(); ++i) {
-        if (cur[i] > end[i])
-            return true;
-    }
-    return false;
-}
-
-
-template <typename T>
-void print_vec_bin(const vector<T>& vec) {
-    printf("[");
-    int i;
-    for (i = 0; i < vec.size() - 1; ++i) {
-        printf("%08b, ", vec[i]);
-    }
-    printf("%08b]\n", vec[i]);
-}
-
-template <typename T>
-void print_vec(const vector<T>& vec) {
-    printf("[");
-    int i;
-    for (i = 0; i < vec.size() - 1; ++i) {
-        printf("%d, ", vec[i]);
-    }
-    printf("%d]\n", vec[i]);
-}
-
-using press_counter = vector<int>;
-
-//instead of keeping the path, we just keep how many times each button was pressed (order is not important)
-void all_paths_dfs(int start, int end, vector<int>& edges,
-        map<press_counter, bool> visited,
-        press_counter& path, set<press_counter>& all_paths) {
-    if (start >= end) {
-        all_paths.insert(path);
-        //print_vec(path);
-        visited[path] = true;
-        return;
-    }
-
-    if (visited.find(path) != cend(visited))
-        return;
-
-    for (int i = 0; i < edges.size(); ++i) {
-        if (edges[i]) {
-            ++path[i];
-            all_paths_dfs(start + 1, end, edges, visited, path, all_paths);
-            --path[i];
-        }
-    }
-    visited[path] = true;
 }
 
 inline bool is_bit_on(int x, int bit) {
@@ -198,13 +136,10 @@ int integer_programming_solve(const vector<int>& buttons, const vector<int>& ene
         glp_set_row_bnds(problem, row + 1, GLP_FX, energy[row], energy[row]); // ==energy_i
 
     // load matrix
-    vector<int> coef_rows;
-    vector<int> coef_cols;
-    vector<double> coef_vals;
-
-    coef_rows.push_back(0);
-    coef_cols.push_back(0);
-    coef_vals.push_back(0);
+    // coeficients and constraints start at index 1
+    vector<int> coef_rows = { 0 };
+    vector<int> coef_cols = { 0 };
+    vector<double> coef_vals = { 0 };
 
     for (int row = 0; row < nconstraints; ++row) {
         for (int col = 0; col < nvariables; ++col) {
@@ -242,12 +177,8 @@ int main() {
         if (state == 0 && buttons.empty() && energy.empty())
             break;
 
-        const int presses = bfs(state, buttons);
-        total += presses;
-
-        const int presses_2 = integer_programming_solve(buttons, energy);
-        total_2 += presses_2;
-
+        total += bfs(state, buttons);
+        total_2 += integer_programming_solve(buttons, energy);
     }
     printf("Total: %d\n", total);
     printf("Total Energy counter: %d\n", total_2);
